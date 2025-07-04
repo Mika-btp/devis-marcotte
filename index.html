@@ -284,93 +284,123 @@
 
   <!-- Script -->
   <script>
-    // Initialisation des dates
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById('devisDate').value = new Date().toISOString().split('T')[0];
-      const validDate = new Date();
-      validDate.setDate(validDate.getDate() + 30);
-      document.getElementById('validUntil').value = validDate.toISOString().split('T')[0];
-      calculateTotals(); // 👈 Calcul des totaux au chargement
+  document.addEventListener("DOMContentLoaded", () => {
+    // Initialiser les dates et totaux
+    document.getElementById('devisDate').value = new Date().toISOString().split('T')[0];
+    const validDate = new Date();
+    validDate.setDate(validDate.getDate() + 30);
+    document.getElementById('validUntil').value = validDate.toISOString().split('T')[0];
+    calculateTotals();
+
+    // Ajouter les événements sur les inputs existants au chargement
+    document.querySelectorAll('.qty-input').forEach(input => {
+      input.addEventListener('input', e => calculateRowAndTotals(e.target));
     });
+    document.querySelectorAll('.price-input').forEach(input => {
+      input.addEventListener('input', e => calculateRowAndTotals(e.target));
+    });
+  });
 
-    let currentDevisNumber = parseInt(localStorage.getItem('devisNumber')) || 1;
-    document.getElementById('devisNumber').textContent = currentDevisNumber;
+  let currentDevisNumber = parseInt(localStorage.getItem('devisNumber')) || 1;
+  document.getElementById('devisNumber').textContent = currentDevisNumber;
 
-    function calculateRow(input) {
-      const row = input.closest('tr');
+  // Calcule une ligne et met à jour les totaux globaux
+  function calculateRowAndTotals(input) {
+    const row = input.closest('tr');
+    const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
+    const price = parseFloat(row.querySelector('.price-input').value) || 0;
+    const total = qty * price;
+    const tva = total * 0.2;
+
+    row.querySelector('.total-cell').textContent = total.toFixed(2) + ' €';
+    row.querySelector('.tva-cell').textContent = tva.toFixed(2) + ' €';
+
+    calculateTotals();
+  }
+
+  // Calcule les totaux HT, TVA et TTC
+  function calculateTotals() {
+    let totalHT = 0;
+    let totalTVA = 0;
+
+    document.querySelectorAll('#itemsTable tr').forEach(row => {
       const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
       const price = parseFloat(row.querySelector('.price-input').value) || 0;
-      const total = qty * price;
-      const tva = total * 0.2;
-      row.querySelector('.total-cell').textContent = total.toFixed(2) + ' €';
-      row.querySelector('.tva-cell').textContent = tva.toFixed(2) + ' €';
-      calculateTotals();
-    }
+      const lineTotal = qty * price;
+      const lineTVA = lineTotal * 0.2;
+      totalHT += lineTotal;
+      totalTVA += lineTVA;
 
-    function calculateTotals() {
-      let totalHT = 0;
-      let totalTVA = 0;
+      // Met à jour la ligne (au cas où)
+      row.querySelector('.total-cell').textContent = lineTotal.toFixed(2) + ' €';
+      row.querySelector('.tva-cell').textContent = lineTVA.toFixed(2) + ' €';
+    });
 
-      document.querySelectorAll('#itemsTable tr').forEach(row => {
-        const qty = parseFloat(row.querySelector('.qty-input')?.value) || 0;
-        const price = parseFloat(row.querySelector('.price-input')?.value) || 0;
-        const lineTotal = qty * price;
-        const lineTVA = lineTotal * 0.2;
-        totalHT += lineTotal;
-        totalTVA += lineTVA;
-      });
+    document.getElementById('totalHT').textContent = totalHT.toFixed(2) + ' €';
+    document.getElementById('totalTVA').textContent = totalTVA.toFixed(2) + ' €';
+    document.getElementById('totalTTC').textContent = (totalHT + totalTVA).toFixed(2) + ' €';
+  }
 
-      document.getElementById('totalHT').textContent = totalHT.toFixed(2) + ' €';
-      document.getElementById('totalTVA').textContent = totalTVA.toFixed(2) + ' €';
-      document.getElementById('totalTTC').textContent = (totalHT + totalTVA).toFixed(2) + ' €';
-    }
+  // Ajoute une nouvelle ligne avec les bons écouteurs
+  function addItem() {
+    const tbody = document.getElementById('itemsTable');
+    const newRow = document.createElement('tr');
+    newRow.innerHTML = `
+      <td><input type="text" placeholder="Description de la prestation"></td>
+      <td><input type="number" class="qty-input" value="1" min="0" step="1"></td>
+      <td><input type="number" class="price-input" value="0.00" min="0" step="0.01"></td>
+      <td class="total-cell">0.00 €</td>
+      <td class="tva-cell">0.00 €</td>
+    `;
+    tbody.appendChild(newRow);
 
-    function addItem() {
-      const tbody = document.getElementById('itemsTable');
-      const newRow = document.createElement('tr');
-      newRow.innerHTML = `
-        <td><input type="text" placeholder="Description de la prestation" oninput="calculateTotals()"></td>
-        <td><input type="number" class="qty-input" value="1" placeholder="1" oninput="calculateRow(this)"></td>
-        <td><input type="number" class="price-input" value="0.00" placeholder="0.00" step="0.01" oninput="calculateRow(this)"></td>
+    // Ajoute les événements sur les nouveaux inputs
+    newRow.querySelector('.qty-input').addEventListener('input', e => calculateRowAndTotals(e.target));
+    newRow.querySelector('.price-input').addEventListener('input', e => calculateRowAndTotals(e.target));
+  }
+
+  // Réinitialise le formulaire pour un nouveau devis
+  function newDevis() {
+    currentDevisNumber++;
+    localStorage.setItem('devisNumber', currentDevisNumber);
+    document.getElementById('devisNumber').textContent = currentDevisNumber;
+
+    // Reset client infos
+    document.getElementById('clientName').value = '';
+    document.getElementById('clientAddress').value = '';
+    document.getElementById('clientSiret').value = '';
+    document.getElementById('phone').value = '';
+
+    // Reset dates
+    document.getElementById('devisDate').value = new Date().toISOString().split('T')[0];
+    const validDate = new Date();
+    validDate.setDate(validDate.getDate() + 30);
+    document.getElementById('validUntil').value = validDate.toISOString().split('T')[0];
+
+    // Reset items table avec une ligne vide
+    document.getElementById('itemsTable').innerHTML = `
+      <tr>
+        <td><input type="text" placeholder="Description de la prestation"></td>
+        <td><input type="number" class="qty-input" value="1" min="0" step="1"></td>
+        <td><input type="number" class="price-input" value="0.00" min="0" step="0.01"></td>
         <td class="total-cell">0.00 €</td>
         <td class="tva-cell">0.00 €</td>
-      `;
-      tbody.appendChild(newRow);
-    }
+      </tr>
+    `;
 
-    function newDevis() {
-      // Incrémente numéro de devis
-      currentDevisNumber++;
-      localStorage.setItem('devisNumber', currentDevisNumber);
-      document.getElementById('devisNumber').textContent = currentDevisNumber;
+    // Ajouter les événements sur la nouvelle ligne
+    const firstRow = document.querySelector('#itemsTable tr');
+    firstRow.querySelector('.qty-input').addEventListener('input', e => calculateRowAndTotals(e.target));
+    firstRow.querySelector('.price-input').addEventListener('input', e => calculateRowAndTotals(e.target));
 
-      // Reset formulaire client et dates
-      document.getElementById('clientName').value = '';
-      document.getElementById('clientAddress').value = '';
-      document.getElementById('clientSiret').value = '';
-      document.getElementById('phone').value = '';
-      document.getElementById('devisDate').value = new Date().toISOString().split('T')[0];
-      const validDate = new Date();
-      validDate.setDate(validDate.getDate() + 30);
-      document.getElementById('validUntil').value = validDate.toISOString().split('T')[0];
+    calculateTotals();
+  }
 
-      // Réinitialise la table prestations avec une ligne vide par défaut
-      document.getElementById('itemsTable').innerHTML = `
-        <tr>
-          <td><input type="text" placeholder="Description de la prestation" oninput="calculateTotals()"></td>
-          <td><input type="number" class="qty-input" value="1" placeholder="1" oninput="calculateRow(this)"></td>
-          <td><input type="number" class="price-input" value="0.00" placeholder="0.00" step="0.01" oninput="calculateRow(this)"></td>
-          <td class="total-cell">0.00 €</td>
-          <td class="tva-cell">0.00 €</td>
-        </tr>
-      `;
-      calculateTotals();
-    }
+  // Lance l'impression ou la génération PDF
+  function generatePDF() {
+    window.print();
+  }
+</script>
 
-    // Fonction temporaire d'impression (à adapter avec une vraie génération PDF)
-    function generatePDF() {
-      window.print();
-    }
-  </script>
 </body>
 </html>
