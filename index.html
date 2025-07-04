@@ -403,7 +403,7 @@ function applyGlobalTva() {
     const tvaHeader = document.querySelector('.items-table thead tr th.tva-header');
     if (tvaHeader) {
         if (tauxTva === 0) {
-            tvaHeader.textContent = "TVA non applicable Article 293 du CGI";
+            tvaHeader.textContent = "-";
         } else {
             tvaHeader.textContent = `TVA (${(tauxTva * 100).toFixed(0)}%)`;
         }
@@ -413,7 +413,7 @@ function applyGlobalTva() {
     const totalTvaHeader = document.querySelector('.total-row .tva-header');
     if (totalTvaHeader) {
         if (tauxTva === 0) {
-            totalTvaHeader.textContent = "TVA non applicable Article 293 du CGI:";
+            totalTvaHeader.textContent = "TVA non applicable Article 293 du CGI";
         } else {
             totalTvaHeader.textContent = `TVA (${(tauxTva * 100).toFixed(0)}%):`;
         }
