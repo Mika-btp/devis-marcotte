@@ -399,7 +399,8 @@ function applyGlobalTva() {
     const tvaSelect = document.getElementById('globalTvaSelect');
     const tauxTva = parseFloat(tvaSelect.value);
 
-    const tvaHeader = document.querySelector('.items-table thead tr th.tva-header');
+    // Modifier ici la sélection pour correspondre à ta table :
+    const tvaHeader = document.querySelector('#itemsTable thead tr th.tva-header');
     if (tvaHeader) {
         if (tauxTva === 0) {
             tvaHeader.textContent = "TVA non applicable Article 293 du CGI";
@@ -408,10 +409,10 @@ function applyGlobalTva() {
         }
     }
 
-    // Recalculer toutes les lignes avec la nouvelle TVA
+    // Recalculer toutes les lignes
     document.querySelectorAll('#itemsTable tr').forEach(row => {
-        const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
-        const price = parseFloat(row.querySelector('.price-input').value) || 0;
+        const qty = parseFloat(row.querySelector('.qty-input')?.value) || 0;
+        const price = parseFloat(row.querySelector('.price-input')?.value) || 0;
         const totalHT = qty * price;
 
         row.querySelector('.total-cell').textContent = totalHT.toFixed(2) + ' €';
@@ -426,6 +427,7 @@ function applyGlobalTva() {
 
     calculateTotals();
 }
+
 
 // Au chargement, on applique le taux de TVA par défaut (0%)
 applyGlobalTva();
