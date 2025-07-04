@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Générateur de Devis - MARCOTTE MICKAEL test</title>
+  <title>Générateur de Devis - MARCOTTE MICKAEL</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -282,11 +282,16 @@
     </div>
   </div>
 
+   <!-- Script -->
   <script>
-    document.getElementById('devisDate').value = new Date().toISOString().split('T')[0];
-    const validDate = new Date();
-    validDate.setDate(validDate.getDate() + 30);
-    document.getElementById('validUntil').value = validDate.toISOString().split('T')[0];
+    // Initialisation des dates
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById('devisDate').value = new Date().toISOString().split('T')[0];
+      const validDate = new Date();
+      validDate.setDate(validDate.getDate() + 30);
+      document.getElementById('validUntil').value = validDate.toISOString().split('T')[0];
+      calculateTotals(); // 👈 Calcul des totaux au chargement
+    });
 
     let currentDevisNumber = parseInt(localStorage.getItem('devisNumber')) || 1;
     document.getElementById('devisNumber').textContent = currentDevisNumber;
@@ -297,10 +302,8 @@
       const price = parseFloat(row.querySelector('.price-input').value) || 0;
       const total = qty * price;
       const tva = total * 0.2;
-
       row.querySelector('.total-cell').textContent = total.toFixed(2) + ' €';
       row.querySelector('.tva-cell').textContent = tva.toFixed(2) + ' €';
-
       calculateTotals();
     }
 
@@ -313,7 +316,6 @@
         const price = parseFloat(row.querySelector('.price-input')?.value) || 0;
         const lineTotal = qty * price;
         const lineTVA = lineTotal * 0.2;
-
         totalHT += lineTotal;
         totalTVA += lineTVA;
       });
@@ -364,9 +366,6 @@
     function generatePDF() {
       window.print();
     }
-
-    // Calcul initial
-    calculateTotals();
   </script>
 </body>
 </html>
