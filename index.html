@@ -290,7 +290,7 @@
     </div>
 
     <script>
-    // Initialiser la date du jour
+// Initialiser la date du jour
 document.getElementById('devisDate').value = new Date().toISOString().split('T')[0];
 
 // Date de validité (30 jours par défaut)
@@ -302,86 +302,54 @@ document.getElementById('validUntil').value = validDate.toISOString().split('T')
 let currentDevisNumber = parseInt(localStorage.getItem('devisNumber')) || 1;
 document.getElementById('devisNumber').textContent = currentDevisNumber;
 
-// Applique la TVA sélectionnée et met à jour le header + calculs
-function applyGlobalTva() {
-    const tvaSelect = document.getElementById('globalTvaSelect');
-    const tauxTva = parseFloat(tvaSelect.value);
-
-    // Met à jour le header de la colonne TVA
-    const tvaHeader = document.querySelector('.items-table thead tr th.tva-header');
-    if (tvaHeader) {
-        tvaHeader.textContent = `TVA (${(tauxTva * 100).toFixed(0)}%)`;
-    }
-
-    // Recalcule les lignes et totaux avec le nouveau taux
-    recalculeAvecTva(tauxTva);
-}
-
-// Recalcule tous les totaux et lignes avec un taux de TVA donné
-function recalculeAvecTva(tauxTva) {
-    document.querySelectorAll('#itemsTable tr').forEach(row => {
-        const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
-        const price = parseFloat(row.querySelector('.price-input').value) || 0;
-        const totalHT = qty * price;
-        const tvaMontant = totalHT * tauxTva;
-
-        row.querySelector('.total-cell').textContent = totalHT.toFixed(2) + ' €';
-        row.querySelector('.tva-cell').textContent = tvaMontant.toFixed(2) + ' €';
-    });
-
-    // Totaux généraux
-    let totalHT = 0;
-    let totalTVA = 0;
-
-    document.querySelectorAll('#itemsTable tr').forEach(row => {
-        const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
-        const price = parseFloat(row.querySelector('.price-input').value) || 0;
-        totalHT += qty * price;
-        totalTVA += (qty * price) * tauxTva;
-    });
-
-    document.getElementById('totalHT').textContent = totalHT.toFixed(2) + ' €';
-    document.getElementById('totalTVA').textContent = totalTVA.toFixed(2) + ' €';
-    document.getElementById('totalTTC').textContent = (totalHT + totalTVA).toFixed(2) + ' €';
-}
-
-// Calcule une ligne quand qty ou prix change, puis recalcul des totaux
 function calculateRow(input) {
-    const tauxTva = parseFloat(document.getElementById('globalTvaSelect').value);
     const row = input.closest('tr');
     const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
     const price = parseFloat(row.querySelector('.price-input').value) || 0;
-    const total = qty * price;
-    const tva = total * tauxTva;
+    const totalHT = qty * price;
 
-    row.querySelector('.total-cell').textContent = total.toFixed(2) + ' €';
-    row.querySelector('.tva-cell').textContent = tva.toFixed(2) + ' €';
+    row.querySelector('.total-cell').textContent = totalHT.toFixed(2) + ' €';
+
+    // Récupérer le taux de TVA global
+    const tauxTva = parseFloat(document.getElementById('globalTvaSelect').value);
+    if (tauxTva === 0) {
+        row.querySelector('.tva-cell').textContent = "-";
+    } else {
+        const tvaMontant = totalHT * tauxTva;
+        row.querySelector('.tva-cell').textContent = tvaMontant.toFixed(2) + ' €';
+    }
 
     calculateTotals();
 }
 
-// Recalcule tous les totaux (HT, TVA, TTC)
 function calculateTotals() {
-    const tauxTva = parseFloat(document.getElementById('globalTvaSelect').value);
     let totalHT = 0;
     let totalTVA = 0;
+    const tauxTva = parseFloat(document.getElementById('globalTvaSelect').value);
 
     document.querySelectorAll('#itemsTable tr').forEach(row => {
         const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
         const price = parseFloat(row.querySelector('.price-input').value) || 0;
         const lineTotal = qty * price;
-        const lineTVA = lineTotal * tauxTva;
 
         totalHT += lineTotal;
-        totalTVA += lineTVA;
+
+        if (tauxTva !== 0) {
+            totalTVA += lineTotal * tauxTva;
+        }
     });
 
     document.getElementById('totalHT').textContent = totalHT.toFixed(2) + ' €';
-    document.getElementById('totalTVA').textContent = totalTVA.toFixed(2) + ' €';
-    document.getElementById('totalTTC').textContent = (totalHT + totalTVA).toFixed(2) + ' €';
+
+    if (tauxTva === 0) {
+        document.getElementById('totalTVA').textContent = "-";
+        document.getElementById('totalTTC').textContent = totalHT.toFixed(2) + ' €';
+    } else {
+        document.getElementById('totalTVA').textContent = totalTVA.toFixed(2) + ' €';
+        document.getElementById('totalTTC').textContent = (totalHT + totalTVA).toFixed(2) + ' €';
+    }
 }
 
-// Ajoute une nouvelle ligne de prestation
 function addItem() {
     const tbody = document.getElementById('itemsTable');
     const newRow = document.createElement('tr');
@@ -390,12 +358,11 @@ function addItem() {
         <td><input type="number" class="qty-input" placeholder="1" onchange="calculateRow(this)"></td>
         <td><input type="number" class="price-input" placeholder="0.00" step="0.01" onchange="calculateRow(this)"></td>
         <td class="total-cell">0.00 €</td>
-        <td class="tva-cell">0.00 €</td>
+        <td class="tva-cell">-</td>
     `;
     tbody.appendChild(newRow);
 }
 
-// Réinitialise le formulaire pour un nouveau devis
 function newDevis() {
     currentDevisNumber++;
     localStorage.setItem('devisNumber', currentDevisNumber);
@@ -417,24 +384,52 @@ function newDevis() {
             <td><input type="number" class="qty-input" placeholder="1" onchange="calculateRow(this)"></td>
             <td><input type="number" class="price-input" placeholder="0.00" step="0.01" onchange="calculateRow(this)"></td>
             <td class="total-cell">0.00 €</td>
-            <td class="tva-cell">0.00 €</td>
+            <td class="tva-cell">-</td>
         </tr>
     `;
 
     calculateTotals();
 }
 
-// Imprime la page (pour PDF)
 function generatePDF() {
     window.print();
 }
 
-// Au chargement, ajoute classe sur header TVA et applique la TVA par défaut
-window.onload = function() {
-    const headerTva = document.querySelector('.items-table thead tr th:nth-child(5)');
-    if (headerTva) headerTva.classList.add('tva-header');
-    applyGlobalTva();
-};
+function applyGlobalTva() {
+    const tvaSelect = document.getElementById('globalTvaSelect');
+    const tauxTva = parseFloat(tvaSelect.value);
+
+    const tvaHeader = document.querySelector('.items-table thead tr th.tva-header');
+    if (tvaHeader) {
+        if (tauxTva === 0) {
+            tvaHeader.textContent = "TVA non applicable Article 293 du CGI";
+        } else {
+            tvaHeader.textContent = `TVA (${(tauxTva * 100).toFixed(0)}%)`;
+        }
+    }
+
+    // Recalculer toutes les lignes avec la nouvelle TVA
+    document.querySelectorAll('#itemsTable tr').forEach(row => {
+        const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
+        const price = parseFloat(row.querySelector('.price-input').value) || 0;
+        const totalHT = qty * price;
+
+        row.querySelector('.total-cell').textContent = totalHT.toFixed(2) + ' €';
+
+        if (tauxTva === 0) {
+            row.querySelector('.tva-cell').textContent = "-";
+        } else {
+            const tvaMontant = totalHT * tauxTva;
+            row.querySelector('.tva-cell').textContent = tvaMontant.toFixed(2) + ' €';
+        }
+    });
+
+    calculateTotals();
+}
+
+// Au chargement, on applique le taux de TVA par défaut (0%)
+applyGlobalTva();
+
 
 </script>
 
