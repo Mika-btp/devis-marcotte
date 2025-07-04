@@ -359,8 +359,15 @@ function addItem() {
         <td><input type="number" class="price-input" placeholder="0.00" step="0.01" onchange="calculateRow(this)"></td>
         <td class="total-cell">0.00 €</td>
         <td class="tva-cell">-</td>
+        <td><button onclick="removeRow(this)">🗑️</button></td>
     `;
     tbody.appendChild(newRow);
+}
+
+function removeRow(button) {
+    const row = button.closest('tr');
+    row.remove();
+    calculateTotals();
 }
 
 function newDevis() {
@@ -378,6 +385,16 @@ function newDevis() {
     validDate.setDate(validDate.getDate() + 30);
     document.getElementById('validUntil').value = validDate.toISOString().split('T')[0];
 
+    /*document.getElementById('itemsTable').innerHTML = `
+        <tr>
+            <td><input type="text" placeholder="Description de la prestation" onchange="calculateTotals()"></td>
+            <td><input type="number" class="qty-input" placeholder="1" onchange="calculateRow(this)"></td>
+            <td><input type="number" class="price-input" placeholder="0.00" step="0.01" onchange="calculateRow(this)"></td>
+            <td class="total-cell">0.00 €</td>
+            <td class="tva-cell">-</td>
+        </tr>
+    `;*/
+
     document.getElementById('itemsTable').innerHTML = `
         <tr>
             <td><input type="text" placeholder="Description de la prestation" onchange="calculateTotals()"></td>
@@ -385,6 +402,7 @@ function newDevis() {
             <td><input type="number" class="price-input" placeholder="0.00" step="0.01" onchange="calculateRow(this)"></td>
             <td class="total-cell">0.00 €</td>
             <td class="tva-cell">-</td>
+            <td><button onclick="removeRow(this)">🗑️</button></td>
         </tr>
     `;
 
