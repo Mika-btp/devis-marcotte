@@ -61,4 +61,312 @@
     .client-info, .devis-info {
       width: 48%;
     }
-    .client-info h
+    .client-info h3, .devis-info h3 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      color: #333;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+    }
+    .form-group {
+      margin-bottom: 10px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 2px;
+    }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .form-group textarea {
+      height: 60px;
+      resize: vertical;
+    }
+    .items-section {
+      margin: 30px 0;
+    }
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    .items-table th, .items-table td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+    .items-table th {
+      background-color: #f8f8f8;
+      font-weight: bold;
+    }
+    .items-table input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-size: 14px;
+    }
+    .items-table .qty-input, .items-table .price-input {
+      text-align: right;
+    }
+    .add-item-btn {
+      background-color: #28a745;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .add-item-btn:hover {
+      background-color: #218838;
+    }
+    .totals {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .total-row.final {
+      font-weight: bold;
+      font-size: 18px;
+      border-top: 2px solid #333;
+      padding-top: 10px;
+    }
+    .actions {
+      margin-top: 30px;
+      text-align: center;
+    }
+    .btn {
+      padding: 12px 24px;
+      margin: 0 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      color: white;
+    }
+    .btn-success {
+      background-color: #28a745;
+      color: white;
+    }
+    .btn:hover {
+      opacity: 0.9;
+    }
+    @media print {
+      .actions, .add-item-btn {
+        display: none;
+      }
+      body {
+        background: white;
+      }
+      .container {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo-section">
+        <svg class="logo" viewBox="0 0 50 50">
+          <rect x="0" y="40" width="50" height="5" fill="#333" rx="1"/>
+          <rect x="8" y="20" width="34" height="20" fill="none" stroke="#333" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M0 20 L25 0 L50 20" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="20" y="28" width="10" height="12" fill="#333" rx="1"/>
+          <rect x="10" y="24" width="8" height="8" fill="none" stroke="#333" stroke-width="1.5"/>
+          <path d="M10 28 L18 28 M14 24 L14 32" stroke="#333" stroke-width="1"/>
+          <rect x="32" y="10" width="5" height="15" fill="#333" rx="1"/>
+        </svg>
+        <div class="company-info">
+          <h1>MARCOTTE MICKAEL</h1>
+          <p>32 Rue du Bosquet - 06150 Cannes la Bocca</p>
+          <p>SIRET: 793 721 408</p>
+        </div>
+      </div>
+      <div class="devis-number">
+        Devis N° <span id="devisNumber">1</span>
+      </div>
+    </div>
+
+    <div class="client-section">
+      <div class="client-info">
+        <h3>DESTINATAIRE</h3>
+        <div class="form-group">
+          <label>Nom de l'entreprise/Client</label>
+          <input type="text" id="clientName" placeholder="Nom du client"/>
+        </div>
+        <div class="form-group">
+          <label>Adresse</label>
+          <textarea id="clientAddress" placeholder="Adresse complète"></textarea>
+        </div>
+        <div class="form-group">
+          <label>SIRET (optionnel)</label>
+          <input type="text" id="clientSiret" placeholder="SIRET du client"/>
+        </div>
+      </div>
+      <div class="devis-info">
+        <h3>INFORMATIONS DEVIS</h3>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="devisDate"/>
+        </div>
+        <div class="form-group">
+          <label>Valable jusqu'au</label>
+          <input type="date" id="validUntil"/>
+        </div>
+        <div class="form-group">
+          <label>Téléphone</label>
+          <input type="tel" id="phone" placeholder="Votre téléphone"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="items-section">
+      <h3>PRESTATIONS</h3>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th style="width: 40%">DÉSIGNATION</th>
+            <th style="width: 15%">QUANTITÉ</th>
+            <th style="width: 15%">PRIX UNITAIRE</th>
+            <th style="width: 15%">TOTAL HT</th>
+            <th style="width: 15%">TVA (20%)</th>
+          </tr>
+        </thead>
+        <tbody id="itemsTable">
+          <tr>
+            <td><input type="text" placeholder="Description de la prestation" oninput="calculateTotals()"/></td>
+            <td><input type="number" class="qty-input" placeholder="1" oninput="calculateRow(this)"/></td>
+            <td><input type="number" class="price-input" placeholder="0.00" step="0.01" oninput="calculateRow(this)"/></td>
+            <td class="total-cell">0.00 €</td>
+            <td class="tva-cell">0.00 €</td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="add-item-btn" onclick="addItem()">+ Ajouter une ligne</button>
+    </div>
+
+    <div class="totals">
+      <div class="total-row">
+        <span>Total HT:</span>
+        <span id="totalHT">0.00 €</span>
+      </div>
+      <div class="total-row">
+        <span>TVA (20%):</span>
+        <span id="totalTVA">0.00 €</span>
+      </div>
+      <div class="total-row final">
+        <span>Total TTC:</span>
+        <span id="totalTTC">0.00 €</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="generatePDF()">Imprimer/PDF</button>
+      <button class="btn btn-success" onclick="newDevis()">Nouveau devis</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('devisDate').value = new Date().toISOString().split('T')[0];
+    const validDate = new Date();
+    validDate.setDate(validDate.getDate() + 30);
+    document.getElementById('validUntil').value = validDate.toISOString().split('T')[0];
+
+    let currentDevisNumber = parseInt(localStorage.getItem('devisNumber')) || 1;
+    document.getElementById('devisNumber').textContent = currentDevisNumber;
+
+    function calculateRow(input) {
+      const row = input.closest('tr');
+      const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
+      const price = parseFloat(row.querySelector('.price-input').value) || 0;
+      const total = qty * price;
+      const tva = total * 0.2;
+
+      row.querySelector('.total-cell').textContent = total.toFixed(2) + ' €';
+      row.querySelector('.tva-cell').textContent = tva.toFixed(2) + ' €';
+
+      calculateTotals();
+    }
+
+    function calculateTotals() {
+      let totalHT = 0;
+      let totalTVA = 0;
+
+      document.querySelectorAll('#itemsTable tr').forEach(row => {
+        const qty = parseFloat(row.querySelector('.qty-input')?.value) || 0;
+        const price = parseFloat(row.querySelector('.price-input')?.value) || 0;
+        const lineTotal = qty * price;
+        const lineTVA = lineTotal * 0.2;
+
+        totalHT += lineTotal;
+        totalTVA += lineTVA;
+      });
+
+      document.getElementById('totalHT').textContent = totalHT.toFixed(2) + ' €';
+      document.getElementById('totalTVA').textContent = totalTVA.toFixed(2) + ' €';
+      document.getElementById('totalTTC').textContent = (totalHT + totalTVA).toFixed(2) + ' €';
+    }
+
+    function addItem() {
+      const tbody = document.getElementById('itemsTable');
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td><input type="text" placeholder="Description de la prestation" oninput="calculateTotals()"></td>
+        <td><input type="number" class="qty-input" placeholder="1" oninput="calculateRow(this)"></td>
+        <td><input type="number" class="price-input" placeholder="0.00" step="0.01" oninput="calculateRow(this)"></td>
+        <td class="total-cell">0.00 €</td>
+        <td class="tva-cell">0.00 €</td>
+      `;
+      tbody.appendChild(newRow);
+    }
+
+    function newDevis() {
+      currentDevisNumber++;
+      localStorage.setItem('devisNumber', currentDevisNumber);
+      document.getElementById('devisNumber').textContent = currentDevisNumber;
+      document.getElementById('clientName').value = '';
+      document.getElementById('clientAddress').value = '';
+      document.getElementById('clientSiret').value = '';
+      document.getElementById('phone').value = '';
+      document.getElementById('devisDate').value = new Date().toISOString().split('T')[0];
+      const validDate = new Date();
+      validDate.setDate(validDate.getDate() + 30);
+      document.getElementById('validUntil').value = validDate.toISOString().split('T')[0];
+
+      document.getElementById('itemsTable').innerHTML = `
+        <tr>
+          <td><input type="text" placeholder="Description de la prestation" oninput="calculateTotals()"></td>
+          <td><input type="number" class="qty-input" placeholder="1" oninput="calculateRow(this)"></td>
+          <td><input type="number" class="price-input" placeholder="0.00" step="0.01" oninput="calculateRow(this)"></td>
+          <td class="total-cell">0.00 €</td>
+          <td class="tva-cell">0.00 €</td>
+        </tr>
+      `;
+      calculateTotals();
+    }
+
+    function generatePDF() {
+      window.print();
+    }
+
+    // Calcul initial
+    calculateTotals();
+  </script>
+</body>
+</html>
