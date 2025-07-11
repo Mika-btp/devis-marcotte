@@ -1,186 +1,488 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Devis & Factures - MARCOTTE MICKAEL</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f5f5f5;
-    }
-    .tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .tabs button {
-      padding: 10px 20px;
-      border: none;
-      background-color: #ddd;
-      cursor: pointer;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-    .tabs button.active {
-      background-color: #007bff;
-      color: white;
-    }
-    .tab-content {
-      display: none;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      background: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    h2 {
-      border-bottom: 2px solid #eee;
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-    }
-    label {
-      font-size: 14px;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-    }
-    .actions button {
-      padding: 10px 20px;
-      margin-right: 10px;
-      border: none;
-      border-radius: 4px;
-      background-color: #007bff;
-      color: white;
-      cursor: pointer;
-    }
-    .actions button:hover {
-      opacity: 0.9;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Devis - MARCOTTE MICKAEL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        .logo-section {
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+        }
+        .company-info h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 900;
+            color: #1a1a1a;
+            letter-spacing: 1px;
+        }
+        .company-info p {
+            margin: 2px 0;
+            font-size: 12px;
+            color: #555;
+        }
+        .devis-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        .client-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .client-info, .devis-info {
+            width: 48%;
+        }
+        .client-info h3, .devis-info h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .form-group textarea {
+            height: 60px;
+            resize: vertical;
+        }
+        .items-section {
+            margin: 30px 0;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .items-table th, .items-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .items-table th {
+            background-color: #f8f8f8;
+            font-weight: bold;
+        }
+        .items-table input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+        }
+        .items-table .qty-input, .items-table .price-input {
+            text-align: right;
+        }
+        .add-item-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .add-item-btn:hover {
+            background-color: #218838;
+        }
+        .totals {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .total-row.final {
+            font-weight: bold;
+            font-size: 18px;
+            border-top: 2px solid #333;
+            padding-top: 10px;
+        }
+        .actions {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .btn {
+            padding: 12px 24px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        @media print {
+            .actions, .add-item-btn { display: none; }
+            body { background: white; }
+            .container { box-shadow: none; }
+        }
+    </style>
 </head>
 <body>
-
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('devis', event)">🧾 Devis</button>
-    <button class="tab-btn" onclick="switchTab('facture', event)">📄 Factures</button>
-    <button class="tab-btn" onclick="switchTab('parametres', event)">⚙️ Paramètres</button>
-  </div>
-
-  <!-- Onglet Devis -->
-  <div id="tab-devis" class="tab-content active">
     <div class="container">
-      <h2>Créer un Devis</h2>
-      <p>Numéro de devis : <span id="devisNumber">1</span></p>
-      <label>Nom du client :</label>
-      <input type="text" id="devisClientName" placeholder="Nom du client">
-      <label>Date :</label>
-      <input type="date" id="devisDate">
-      <label>Total HT :</label>
-      <input type="text" id="devisTotalHT" readonly>
-      <div class="actions">
-        <button onclick="generateDevis()">Générer PDF</button>
-        <button onclick="newDevis()">Nouveau devis</button>
-      </div>
+        <!-- En-tête -->
+        <div class="header">
+            <div class="logo-section">
+                <svg class="logo" viewBox="0 0 50 50">
+                    <rect x="0" y="40" width="50" height="5" fill="#333" rx="1"/>
+                    <rect x="8" y="20" width="34" height="20" fill="none" stroke="#333" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M0 20 L25 0 L50 20" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <rect x="20" y="28" width="10" height="12" fill="#333" rx="1"/>
+                    <rect x="10" y="24" width="8" height="8" fill="none" stroke="#333" stroke-width="1.5"/>
+                    <path d="M10 28 L18 28 M14 24 L14 32" stroke="#333" stroke-width="1"/>
+                    <rect x="32" y="10" width="5" height="15" fill="#333" rx="1"/>
+                </svg>
+                <div class="company-info">
+                    <h1>MARCOTTE MICKAEL</h1>
+                    <p>32 Rue du Bosquet - 06150 Cannes la Bocca</p>
+                    <p>SIRET: 793 721 408</p>
+                </div>
+            </div>
+            <div class="devis-number">
+                Devis N° <span id="devisNumber">1</span>
+            </div>
+        </div>
+
+        <!-- Informations client et devis -->
+        <div class="client-section">
+            <div class="client-info">
+                <h3>DESTINATAIRE</h3>
+                <div class="form-group">
+                    <label>Nom de l'entreprise/Client</label>
+                    <input type="text" id="clientName" placeholder="Nom du client">
+                </div>
+                <div class="form-group">
+                    <label>Adresse</label>
+                    <textarea id="clientAddress" placeholder="Adresse complète"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>SIRET (optionnel)</label>
+                    <input type="text" id="clientSiret" placeholder="SIRET du client">
+                </div>
+            </div>
+            <div class="devis-info">
+                <h3>INFORMATIONS DEVIS</h3>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="devisDate">
+                </div>
+                <div class="form-group">
+                    <label>Valable jusqu'au</label>
+                    <input type="date" id="validUntil">
+                </div>
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="tel" id="phone" placeholder="Votre téléphone">
+                </div>
+                <div class="form-group">
+                    <label for="globalTvaSelect">TVA applicable :</label>
+                    <select id="globalTvaSelect" onchange="applyGlobalTva()">
+                        <option value="0" selected>0%</option>
+                        <option value="0.10">10%</option>
+                        <option value="0.20">20%</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau des prestations -->
+        <div class="items-section">
+            <h3>PRESTATIONS</h3>
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40%">DÉSIGNATION</th>
+                        <th style="width: 15%">QUANTITÉ</th>
+                        <th style="width: 15%">PRIX UNITAIRE</th>
+                        <th style="width: 15%">TOTAL HT</th>
+                        <th class="tva-header">TVA (0%)</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsTable">
+                    <tr>
+                        <td><input type="text" placeholder="Description de la prestation" onchange="calculateTotals()"></td>
+                        <td><input type="number" class="qty-input" placeholder="1" onchange="calculateRow(this)"></td>
+                        <td><input type="number" class="price-input" placeholder="0.00" step="0.01" onchange="calculateRow(this)"></td>
+                        <td class="total-cell">0.00 €</td>
+                        <td class="tva-cell">0.00 €</td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="add-item-btn" onclick="addItem()">+ Ajouter une ligne</button>
+        </div>
+
+        <div class="total-row">
+                <span class="tva-header">TVA (20%):</span>
+        </div>
+
+        <!-- Totaux -->
+        <div class="totals">
+            <div class="total-row">
+                <span>Total HT:</span>
+                <span id="totalHT">0.00 €</span>
+            </div>
+            <div class="total-row">
+                <span id="tvaLabel">TVA :</span>
+                <span id="totalTVA">0.00 €</span>
+            </div>
+            <div class="total-row final">
+                <span>Total TTC:</span>
+                <span id="totalTTC">0.00 €</span>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+            <button class="btn btn-primary" onclick="generatePDF()">Imprimer/PDF</button>
+            <button class="btn btn-success" onclick="newDevis()">Nouveau devis</button>
+        </div>
     </div>
-  </div>
 
-  <!-- Onglet Facture -->
-  <div id="tab-facture" class="tab-content">
-    <div class="container">
-      <h2>Créer une Facture</h2>
-      <p>Numéro de facture : <span id="factureNumber">1</span></p>
-      <label>Nom du client :</label>
-      <input type="text" id="factureClientName" placeholder="Nom du client">
-      <label>Date :</label>
-      <input type="date" id="factureDate">
-      <label>Total HT :</label>
-      <input type="text" id="factureTotalHT" readonly>
-      <div class="actions">
-        <button onclick="generateFacture()">Générer PDF</button>
-        <button onclick="newFacture()">Nouvelle facture</button>
-      </div>
-    </div>
-  </div>
+    <script>
+// Initialiser la date du jour
+document.getElementById('devisDate').value = new Date().toISOString().split('T')[0];
 
-  <!-- Onglet Paramètres -->
-  <div id="tab-parametres" class="tab-content">
-    <div class="container">
-      <h2>Paramètres</h2>
-      <p>Ici tu pourras configurer le taux de TVA par défaut, les coordonnées de l'entreprise, etc.</p>
-    </div>
-  </div>
+// Date de validité (30 jours par défaut)
+const validDate = new Date();
+validDate.setDate(validDate.getDate() + 30);
+document.getElementById('validUntil').value = validDate.toISOString().split('T')[0];
 
-  <script>
-    // Gestion des onglets
-    function switchTab(tabName, event) {
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-      document.querySelector('#tab-' + tabName).classList.add('active');
+// Numéro de devis (stocké localement)
+let currentDevisNumber = parseInt(localStorage.getItem('devisNumber')) || 1;
+document.getElementById('devisNumber').textContent = currentDevisNumber;
 
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+function calculateRow(input) {
+    const row = input.closest('tr');
+    const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
+    const price = parseFloat(row.querySelector('.price-input').value) || 0;
+    const totalHT = qty * price;
+
+    row.querySelector('.total-cell').textContent = totalHT.toFixed(2) + ' €';
+
+    // Récupérer le taux de TVA global
+    const tauxTva = parseFloat(document.getElementById('globalTvaSelect').value);
+    if (tauxTva === 0) {
+        row.querySelector('.tva-cell').textContent = "-";
+    } else {
+        const tvaMontant = totalHT * tauxTva;
+        row.querySelector('.tva-cell').textContent = tvaMontant.toFixed(2) + ' €';
     }
 
-    // Initialiser les champs par défaut
-    document.addEventListener('DOMContentLoaded', () => {
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('devisDate').value = today;
-      document.getElementById('factureDate').value = today;
+    calculateTotals();
+}
 
-      const devisNumber = parseInt(localStorage.getItem('devisNumber')) || 1;
-      document.getElementById('devisNumber').textContent = devisNumber;
+function calculateTotals() {
+    console.log("Recalcul total"); // ← vérifie que ça s'affiche
 
-      const factureNumber = parseInt(localStorage.getItem('factureNumber')) || 1;
-      document.getElementById('factureNumber').textContent = factureNumber;
+    let totalHT = 0;
+    let totalTVA = 0;
+    const tauxTva = parseFloat(document.getElementById('globalTvaSelect').value);
+
+    document.querySelectorAll('#itemsTable tr').forEach(row => {
+        const qtyInput = row.querySelector('.qty-input');
+        const priceInput = row.querySelector('.price-input');
+        if (!qtyInput || !priceInput) return; // saute si ligne mal formée
+
+        const qty = parseFloat(qtyInput.value) || 0;
+        const price = parseFloat(priceInput.value) || 0;
+        const lineTotal = qty * price;
+
+        totalHT += lineTotal;
+
+        if (tauxTva !== 0) {
+            totalTVA += lineTotal * tauxTva;
+        }
     });
 
-    function generateDevis() {
-      alert("Fonction d'impression de devis (window.print ou PDF)");
+    const totalHTElement = document.getElementById('totalHT');
+    const totalTVAElement = document.getElementById('totalTVA');
+    const totalTTCElement = document.getElementById('totalTTC');
+
+    if (!totalHTElement || !totalTVAElement || !totalTTCElement) {
+        console.error("Un ou plusieurs éléments de total manquent dans le DOM");
+        return;
     }
 
-    function generateFacture() {
-      alert("Fonction d'impression de facture (window.print ou PDF)");
+    totalHTElement.textContent = totalHT.toFixed(2) + ' €';
+
+    if (tauxTva === 0) {
+        totalTVAElement.textContent = "-";
+        totalTTCElement.textContent = totalHT.toFixed(2) + ' €';
+    } else {
+        totalTVAElement.textContent = totalTVA.toFixed(2) + ' €';
+        totalTTCElement.textContent = (totalHT + totalTVA).toFixed(2) + ' €';
+    }
+}
+
+
+function addItem() {
+    const tbody = document.getElementById('itemsTable');
+    const newRow = document.createElement('tr');
+    newRow.innerHTML = `
+        <td><input type="text" placeholder="Description de la prestation" onchange="calculateTotals()"></td>
+        <td><input type="number" class="qty-input" placeholder="1" onchange="calculateRow(this)"></td>
+        <td><input type="number" class="price-input" placeholder="0.00" step="0.01" onchange="calculateRow(this)"></td>
+        <td class="total-cell">0.00 €</td>
+        <td class="tva-cell">-</td>
+        <td><button onclick="removeRow(this)">🗑️</button></td>
+    `;
+    tbody.appendChild(newRow);
+}
+
+function removeRow(button) {
+    const row = button.closest('tr');
+    row.remove();
+    calculateTotals();
+}
+
+function newDevis() {
+    currentDevisNumber++;
+    localStorage.setItem('devisNumber', currentDevisNumber);
+
+    document.getElementById('devisNumber').textContent = currentDevisNumber;
+    document.getElementById('clientName').value = '';
+    document.getElementById('clientAddress').value = '';
+    document.getElementById('clientSiret').value = '';
+    document.getElementById('phone').value = '';
+
+    document.getElementById('devisDate').value = new Date().toISOString().split('T')[0];
+    const validDate = new Date();
+    validDate.setDate(validDate.getDate() + 30);
+    document.getElementById('validUntil').value = validDate.toISOString().split('T')[0];
+
+    /*document.getElementById('itemsTable').innerHTML = `
+        <tr>
+            <td><input type="text" placeholder="Description de la prestation" onchange="calculateTotals()"></td>
+            <td><input type="number" class="qty-input" placeholder="1" onchange="calculateRow(this)"></td>
+            <td><input type="number" class="price-input" placeholder="0.00" step="0.01" onchange="calculateRow(this)"></td>
+            <td class="total-cell">0.00 €</td>
+            <td class="tva-cell">-</td>
+        </tr>
+    `;*/
+
+    document.getElementById('itemsTable').innerHTML = `
+        <tr>
+            <td><input type="text" placeholder="Description de la prestation" onchange="calculateTotals()"></td>
+            <td><input type="number" class="qty-input" placeholder="1" onchange="calculateRow(this)"></td>
+            <td><input type="number" class="price-input" placeholder="0.00" step="0.01" onchange="calculateRow(this)"></td>
+            <td class="total-cell">0.00 €</td>
+            <td class="tva-cell">-</td>
+            <td><button onclick="removeRow(this)">🗑️</button></td>
+        </tr>
+    `;
+
+    calculateTotals();
+}
+
+function generatePDF() {
+    window.print();
+}
+
+function applyGlobalTva() {
+    const tvaSelect = document.getElementById('globalTvaSelect');
+    const tauxTva = parseFloat(tvaSelect.value);
+
+    // Mise à jour header du tableau
+    const tvaHeader = document.querySelector('.items-table thead tr th.tva-header');
+    if (tvaHeader) {
+        if (tauxTva === 0) {
+            tvaHeader.textContent = "-";
+        } else {
+            tvaHeader.textContent = `TVA (${(tauxTva * 100).toFixed(0)}%)`;
+        }
     }
 
-    function newDevis() {
-      let devisNumber = parseInt(localStorage.getItem('devisNumber')) || 1;
-      devisNumber++;
-      localStorage.setItem('devisNumber', devisNumber);
-      document.getElementById('devisNumber').textContent = devisNumber;
-      document.getElementById('devisClientName').value = '';
-      document.getElementById('devisTotalHT').value = '';
+    // Mise à jour div total TVA
+    const totalTvaHeader = document.querySelector('.total-row .tva-header');
+    if (totalTvaHeader) {
+        if (tauxTva === 0) {
+            totalTvaHeader.textContent = "TVA non applicable Article 293 du CGI";
+        } else {
+            totalTvaHeader.textContent = `TVA (${(tauxTva * 100).toFixed(0)}%):`;
+        }
     }
 
-    function newFacture() {
-      let factureNumber = parseInt(localStorage.getItem('factureNumber')) || 1;
-      factureNumber++;
-      localStorage.setItem('factureNumber', factureNumber);
-      document.getElementById('factureNumber').textContent = factureNumber;
-      document.getElementById('factureClientName').value = '';
-      document.getElementById('factureTotalHT').value = '';
-    }
-  </script>
+    // Recalcul des lignes...
+    document.querySelectorAll('#itemsTable tr').forEach(row => {
+        const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
+        const price = parseFloat(row.querySelector('.price-input').value) || 0;
+        const totalHT = qty * price;
+
+        row.querySelector('.total-cell').textContent = totalHT.toFixed(2) + ' €';
+
+        if (tauxTva === 0) {
+            row.querySelector('.tva-cell').textContent = "-";
+        } else {
+            const tvaMontant = totalHT * tauxTva;
+            row.querySelector('.tva-cell').textContent = tvaMontant.toFixed(2) + ' €';
+        }
+    });
+
+    calculateTotals();
+}
+
+
+
+// Au chargement, on applique le taux de TVA par défaut (0%)
+applyGlobalTva();
+
+
+</script>
 
 </body>
 </html>
