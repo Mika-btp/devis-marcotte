@@ -466,7 +466,9 @@
                     </thead>
                     <tbody id="facture-itemsTable">
                         <tr>
-                            <td><input type="text" placeholder="Description de la prestation" onchange="calculateTotals('facture')"></td>
+                            <td>
+  <textarea placeholder="Description de la prestation" onchange="calculateTotals('facture')" rows="2" cols="30"></textarea>
+</td>
                             <td><input type="number" class="qty-input" placeholder="1" onchange="calculateRow(this, 'facture')"></td>
                             <td><input type="number" class="price-input" placeholder="0.00" step="0.01" onchange="calculateRow(this, 'facture')"></td>
                             <td class="total-cell">0.00 €</td>
